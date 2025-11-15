@@ -41,7 +41,10 @@ function extract_fonts_from_dmg {
     find "$tempDir" -name "*.pkg" -exec 7z x -O"$tempDir" {} ";"
 
     # 3. Extract the "Payload~" file
-    find "$tempDir" -name "Payload~" -exec 7z x -O"$tempDir" {} ";"
+    local payload=$(find "$tempDir" -maxdepth 1 -type d -name "*.pkg" \
+	    -exec find {} -name "Payload" \;)
+    7z x "$payload" -O"$tempDir" -y
+    find "$tempDir" -maxdepth 1 -name "Payload~" -exec 7z x -O"$tempDir" {} ";"
 
     # 4. Move all .otf and .ttf files to target directory
     find "$tempDir" -name "*.[ot]tf" -exec mv -v {} "$extractDir" ";"
